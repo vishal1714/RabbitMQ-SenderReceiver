@@ -21,7 +21,7 @@ const AMQ = async () => {
         (msg) => {
           const Message = JSON.parse(msg.content.toString());
           const test = EmployeeAPILog.create(Message);
-          console.log(`Message -> ${Message}`);
+          console.log(`Message ID Published-> ${i}`);
           i++;
         },
         {
