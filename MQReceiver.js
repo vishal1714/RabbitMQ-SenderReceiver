@@ -2,7 +2,7 @@ var amqp = require('amqplib/callback_api');
 const EmployeeAPILog = require('./models/APILogSchema');
 const express = require('express');
 
-const AMQ = async () => {
+var AMQ = async () => {
   amqp.connect('amqp://vishal:vishal1714@raje.tech', function (error0, conn) {
     if (error0) {
       throw error0;
@@ -18,9 +18,9 @@ const AMQ = async () => {
       var i = 0;
       channel.consume(
         Queue,
-        (msg) => {
+        async (msg) => {
           const Message = JSON.parse(msg.content.toString());
-          const test = EmployeeAPILog.create(Message);
+          await EmployeeAPILog.create(Message);
           console.log(`Queue Name -> ${Queue} Message ID Published-> ${i}`);
           i++;
         },
