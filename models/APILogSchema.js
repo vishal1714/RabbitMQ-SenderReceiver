@@ -25,7 +25,7 @@ const APISchemaLog = new mongoose.Schema({
     Refno: {
       type: 'String',
     },
-    Data: {
+    EncData: {
       type: 'String',
     },
     _id: {
@@ -59,7 +59,7 @@ const APISchemaLog = new mongoose.Schema({
     Refno: {
       type: 'String',
     },
-    Data: {
+    EncData: {
       type: 'String',
     },
     Status: {
@@ -116,4 +116,4 @@ APISchemaLog.set('toJSON', {
     delete ret.__v;
   },
 });
-module.exports = mongoose.model('APILog', APISchemaLog);
+module.exports = mongoose.model('APILogs', APISchemaLog);
