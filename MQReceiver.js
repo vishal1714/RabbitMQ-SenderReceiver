@@ -21,7 +21,9 @@ var AMQ = async () => {
         async (msg) => {
           const Message = JSON.parse(msg.content.toString());
           await EmployeeAPILog.create(Message);
-          console.log(`Queue Name -> ${Queue} Message ID Published-> ${i}`);
+          console.log(
+            `Queue Name -> ${Queue} | Published | Meesage Logged Date -> ${Message.LoggedAt}`
+          );
           i++;
         },
         {

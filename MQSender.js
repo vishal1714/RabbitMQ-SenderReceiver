@@ -12,7 +12,7 @@ amqp.connect(
       }
       let i = 0;
       var queue = 'APILog';
-      while (i < 1000) {
+      while (i < 10) {
         var msg = {
           ReqBody: {
             Refno: '6f75a8fa719b56c707bb72f3e217d143',
@@ -32,13 +32,15 @@ amqp.connect(
         var actualmsg = JSON.stringify(msg);
 
         channel.assertQueue(queue, {
-          durable: false,
+          durable: true,
         });
 
-        channel.sendToQueue(queue, Buffer.from(actualmsg));
-        console.log(' [x] Sent %s', actualmsg);
+        channel.sendToQueue(queue, Buffer.from(actualmsg), {
+          persistent: true,
+        });
+        //console.log(' [x] Sent %s', actualmsg);
         i++;
-        //console.log(i);
+        console.log('Message Sent =>' + i);
       }
     });
   }
