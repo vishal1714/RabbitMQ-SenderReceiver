@@ -12,7 +12,7 @@ amqp.connect(
       }
       let i = 0;
       var queue = 'APILog';
-      while (i < 10) {
+      while (i < 10000) {
         var msg = {
           ReqBody: {
             Refno: '6f75a8fa719b56c707bb72f3e217d143',
