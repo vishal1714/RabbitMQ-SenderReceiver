@@ -11,7 +11,7 @@ var AMQ = async () => {
       if (error1) {
         throw error1;
       }
-      const Queue = 'APILog';
+      const Queue = 'APILogDB';
       channel.assertQueue(Queue, {
         durable: true,
       });
@@ -20,9 +20,9 @@ var AMQ = async () => {
         Queue,
         async (msg) => {
           const Message = JSON.parse(msg.content.toString());
-          await EmployeeAPILog.create(Message);
+          EmployeeAPILog.create(Message);
           console.log(
-            `Queue Name -> ${Queue} | Published | Meesage Logged Date -> ${Message.LoggedAt}`
+            `Queue Name -> ${Queue} | Published| API ID -> ${Message.MQ_ID} | Meesage Logged Date -> ${Message.Data.LoggedAt}`
           );
           i++;
         },

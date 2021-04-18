@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const ConnectDB = async () => {
   try {
     const conn = await mongoose.connect(
-      'mongodb+srv://admin:admin@rajecluster.o4zia.mongodb.net/EMP?retryWrites=true&w=majority',
+      'mongodb://raje.tech:27017',
       {
         useNewUrlParser: true,
         useCreateIndex: true,
