@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const ConnectDB = require('./config/DB');
-const AMQ = require('./MQReceiver');
+const {AMQ , CreatePath} = require('./MQReceiver');
 
 ConnectDB();
 
@@ -10,7 +10,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(morgan('dev'));
+CreatePath('Logs')
 AMQ();
+
 
 app.listen(
   6000,
