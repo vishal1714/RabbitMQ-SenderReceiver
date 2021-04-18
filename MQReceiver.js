@@ -18,9 +18,9 @@ var AMQ = async () => {
       var i = 0;
       channel.consume(
         Queue,
-        async (msg) => {
+        (msg) => {
           const Message = JSON.parse(msg.content.toString());
-          EmployeeAPILog.create(Message);
+          EmployeeAPILog.create(Message.Data);
           console.log(
             `Queue Name -> ${Queue} | Published| API ID -> ${Message.MQ_ID} | Meesage Logged Date -> ${Message.Data.LoggedAt}`
           );
