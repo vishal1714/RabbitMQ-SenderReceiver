@@ -27,7 +27,7 @@ var AMQ = async () => {
           const Message = JSON.parse(msg.content.toString());
           EmployeeAPILog.create(Message.Data);
           console.log(
-            `Queue Name -> ${Queue} | Published| MQ ID -> ${Message.MQ_ID} | Meesage Logged Date -> ${Message.Data.LoggedAt}`
+            `MQ ID -> ${Message.MQ_ID} | Queue Name -> ${Queue} | Meesage Logged Date -> ${Message.Data.LoggedAt}`
           );
         },
         {
@@ -45,7 +45,7 @@ var AMQ = async () => {
           var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
           var LogedinDB = JSON.stringify(Message.Data);
           //console.log('Log' + LogedinDB);
-          var LogData = "|" + LogDate + "|" + LogedinDB;
+          var LogData = "|" + LogDate + "| Source - MQ |" + LogedinDB;
 
           let filename = "./Logs/APILog" + "-" + FileDate + ".log";
           // var logStream = fs.createWriteStream(filename, { flags: 'a' });

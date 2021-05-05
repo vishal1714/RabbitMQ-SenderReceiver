@@ -50,7 +50,7 @@ app.post("/APILog", async (req, res, next) => {
       var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
       var LogedinDB = JSON.stringify(req.body);
       //console.log('Log' + LogedinDB);
-      var LogData = "|" + LogDate + "|" + LogedinDB;
+      var LogData = "|" + LogDate + "| Source - API |" + LogedinDB;
 
       let filename = "./Logs/APILog" + "-" + FileDate + ".log";
       // var logStream = fs.createWriteStream(filename, { flags: 'a' });
