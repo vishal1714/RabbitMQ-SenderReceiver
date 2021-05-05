@@ -34,4 +34,4 @@ app.use(morgan("dev"));
 CreatePath("Logs");
 AMQ();
 
-app.listen(5001, console.log(`Log Server Started on Port 5001`));
+app.listen(6000, console.log(`Log Server Started on Port 6000`));
