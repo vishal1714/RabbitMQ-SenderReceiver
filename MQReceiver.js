@@ -21,6 +21,7 @@ var AMQ = async () => {
       channel.assertQueue(Queue1, {
         durable: true,
       });
+      channel.prefetch(10);
       channel.consume(
         Queue,
         (msg) => {
