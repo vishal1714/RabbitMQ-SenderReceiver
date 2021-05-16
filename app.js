@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const ConnectDB = require("./config/DB");
 const { AMQ, CreatePath } = require("./MQReceiver");
+const Cron = require("./LogFunctions");
 const EmployeeAPILog = require("./models/APILogSchema");
 const fs = require("fs");
 const moment = require("moment");
@@ -68,7 +69,7 @@ app.post("/APILog", async (req, res, next) => {
         });
 
         console.log(
-          `API DB Log RefNo(_id)-> ${Loginfo._id} DBLogTime -> ${Loginfo.DBLoggedAt}`
+          `API DBRefNo - ${Loginfo._id} DBLogTime -> ${Loginfo.DBLoggedAt}`
         );
       }
     } else {
@@ -87,6 +88,7 @@ app.post("/APILog", async (req, res, next) => {
 
 app.use(morgan("dev"));
 CreatePath("Logs");
+CreatePath("Logs/Zip");
 AMQ();
 
 app.listen(6000, console.log(`Log Server Started on Port 6000`));
