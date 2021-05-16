@@ -44,7 +44,7 @@ var AMQ = async () => {
             .tz("Asia/Kolkata")
             .format("MMMM Do YYYY, hh:mm:ss A");
           var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
-          var LogedinDB = JSON.stringify(Message.Data);
+          var LogedinDB = JSON.stringify(Message);
           //console.log('Log' + LogedinDB);
           var LogData = "|" + LogDate + "| Source - MQ |" + LogedinDB;
 
