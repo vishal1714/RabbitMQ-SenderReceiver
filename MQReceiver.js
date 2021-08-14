@@ -3,8 +3,9 @@ const EmployeeAPILog = require("./models/APILogSchema");
 const express = require("express");
 const fs = require("fs");
 const moment = require("moment");
+const RandomString = require("randomstring");
 
-var AMQ = async () => {
+var APILogMQRec = async () => {
   amqp.connect("amqp://vishal:vishal1714@raje.tech", function (error0, conn) {
     if (error0) {
       throw error0;
@@ -65,6 +66,57 @@ var AMQ = async () => {
   });
 };
 
+const ApprovalMQ = async (Queue, MongoSchemaObject) => {
+  amqp.connect("amqp://vishal:vishal1714@raje.tech", function (error0, conn) {
+    if (error0) {
+      throw error0;
+    }
+    conn.createChannel(function (error1, channel) {
+      if (error1) {
+        throw error1;
+      }
+      channel.assertQueue(Queue, {
+        durable: true,
+      });
+      var i = 0;
+      channel.consume(
+        Queue,
+        async (msg) => {
+          i++;
+          const Message = JSON.parse(msg.content.toString());
+
+          function Random() {
+            return RandomString.generate({
+              length: 3,
+              charset: "numeric",
+            });
+          }
+          var DayID = moment().tz("Asia/Kolkata").format("YYYYMMDDhhmmss");
+          var RandomApprovalID = "RAJE"+DayID + Random() + i;
+	  var ModDate = moment().tz("Asia/Kolkata").format("MMMM Do YYYY, hh:mm:ss A")
+          await MongoSchemaObject.updateOne(
+            {
+              _id: Message.EmpRefNo,
+            },
+            {
+              $set: {
+                Status: "Success",
+                ApprovalID: RandomApprovalID,
+ModifiedAt: ModDate,
+              },
+            }
+          );
+console.log(`Approved EMPID ${Message.EmpRefNo} Approval ID ${RandomApprovalID}`)
+          //const test = await MongoSchemaObject.create(Message.Data);
+        },
+        {
+          noAck: true,
+        }
+      );
+    });
+  });
+};
+
 function CreatePath(filePath) {
   if (fs.existsSync(filePath)) {
   } else {
@@ -72,4 +124,4 @@ function CreatePath(filePath) {
   }
 }
 
-module.exports = { AMQ, CreatePath };
+module.exports = { APILogMQRec,ApprovalMQ, CreatePath };

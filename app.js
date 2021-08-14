@@ -1,9 +1,10 @@
 const express = require("express");
 const morgan = require("morgan");
 const ConnectDB = require("./config/DB");
-const { AMQ, CreatePath } = require("./MQReceiver");
+const { APILogMQRec,ApprovalMQ, CreatePath } = require("./MQReceiver");
 const Cron = require("./LogFunctions");
 const EmployeeAPILog = require("./models/APILogSchema");
+const EmployeeSchema = require("./models/EmployeeSchema");
 const fs = require("fs");
 const moment = require("moment");
 
@@ -89,6 +90,6 @@ app.post("/APILog", async (req, res, next) => {
 app.use(morgan("dev"));
 CreatePath("Logs");
 CreatePath("Logs/Zip");
-AMQ();
-
+APILogMQRec();
+ApprovalMQ("AddEmployee_Initiate",EmployeeSchema)
 app.listen(6000, console.log(`Log Server Started on Port 6000`));

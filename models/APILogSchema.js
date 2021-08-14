@@ -4,7 +4,7 @@ const moment = require("moment-timezone");
 
 const APISchemaLog = new mongoose.Schema({
   _id: {
-    type: String,
+    type: "String",
     default: uuid.v4,
   },
   EncKey: {
@@ -22,13 +22,16 @@ const APISchemaLog = new mongoose.Schema({
     },
   },
   ReqBody: {
-    Refno: {
-      type: "String",
-    },
     EncData: {
       type: "String",
     },
     _id: {
+      type: "String",
+    },
+    Status: {
+      type: "String",
+    },
+    ApprovalId: {
       type: "String",
     },
     Name: {
@@ -55,9 +58,6 @@ const APISchemaLog = new mongoose.Schema({
       Info: {
         type: "String",
       },
-    },
-    Refno: {
-      type: "String",
     },
     EncData: {
       type: "String",
