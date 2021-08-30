@@ -13,7 +13,7 @@ const pipe = promisify(pipeline);
 
 dotenv.config({ path: "./config/config.env" });
 
-cron.schedule("* 2 * * *", function () {
+cron.schedule("59 */23 * * *", function () {
   //59 */23 * * *
   var Currentdate = moment()
     .tz("Asia/Kolkata")

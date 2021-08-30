@@ -92,9 +92,11 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
             });
           }
           var DayID = moment().tz("Asia/Kolkata").format("YYYYMMDDhhmmss");
-          var RandomApprovalID = "RAJE"+DayID + Random() + i;
-	  var ModDate = moment().tz("Asia/Kolkata").format("MMMM Do YYYY, hh:mm:ss A")
-          await MongoSchemaObject.updateOne(
+          var RandomApprovalID = "RAJE" + DayID + Random() + i;
+          var ModDate = moment()
+            .tz("Asia/Kolkata")
+            .format("MMMM Do YYYY, hh:mm:ss A");
+          const ApprovedData1 = await MongoSchemaObject.findOneAndUpdate(
             {
               _id: Message.EmpRefNo,
             },
@@ -102,11 +104,32 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
               $set: {
                 Status: "Success",
                 ApprovalID: RandomApprovalID,
-ModifiedAt: ModDate,
+                ModifiedAt: ModDate,
               },
-            }
+            },
+            { new: true }
           );
-console.log(`Approved EMPID ${Message.EmpRefNo} Approval ID ${RandomApprovalID}`)
+
+          var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+          var ApprovedData =  {
+			ReqData : Message,
+			ResData : ApprovedData1
+}
+          var StrigApprovedData = JSON.stringify(ApprovedData);
+          var LogData = "|" + ModDate + "| Source - MQ |" + StrigApprovedData;
+
+          let filename = "./Logs/APIApprovedReq" + "-" + FileDate + ".log";
+          // var logStream = fs.createWriteStream(filename, { flags: 'a' });
+          // use {flags: 'a'} to append and {flags: 'w'} to erase and write a new file
+          // logStream.write(LogData + '\n');
+
+          fs.appendFile(filename, LogData + "\n", function (err) {
+            if (err) throw err;
+          });
+
+          console.log(
+            `Approved RefNo ${Message.EmpRefNo} | Approval ID ${RandomApprovalID} | LoggedDate ${ModDate}`
+          );
           //const test = await MongoSchemaObject.create(Message.Data);
         },
         {
@@ -117,6 +140,18 @@ console.log(`Approved EMPID ${Message.EmpRefNo} Approval ID ${RandomApprovalID}`
   });
 };
 
+/*
+setInterval(()=>{
+  try {
+    const getemployees = await Employee.find().select("-__v");
+  } catch (error) {
+    
+  }
+  
+
+
+},50000)*/
+
 function CreatePath(filePath) {
   if (fs.existsSync(filePath)) {
   } else {
@@ -124,4 +159,4 @@ function CreatePath(filePath) {
   }
 }
 
-module.exports = { APILogMQRec,ApprovalMQ, CreatePath };
+module.exports = { APILogMQRec, ApprovalMQ, CreatePath };
