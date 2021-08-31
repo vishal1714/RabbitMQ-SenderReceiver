@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./Config.env" });
+
 const ConnectDB = async () => {
   try {
     const conn = await mongoose.connect(
-      'mongodb://raje.tech:27017',
+      process.env.MONGO_URL,
       {
         useNewUrlParser: true,
         useCreateIndex: true,

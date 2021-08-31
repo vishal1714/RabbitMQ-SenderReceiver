@@ -4,9 +4,13 @@ const express = require("express");
 const fs = require("fs");
 const moment = require("moment");
 const RandomString = require("randomstring");
+const dotenv = require("dotenv");
+const cron = require("node-cron");
+
+dotenv.config({ path: "./config/Config.env" });
 
 var APILogMQRec = async () => {
-  amqp.connect("amqp://vishal:vishal1714@raje.tech", function (error0, conn) {
+  amqp.connect(process.env.RabbitMQ_URL, function (error0, conn) {
     if (error0) {
       throw error0;
     }
@@ -67,7 +71,7 @@ var APILogMQRec = async () => {
 };
 
 const ApprovalMQ = async (Queue, MongoSchemaObject) => {
-  amqp.connect("amqp://vishal:vishal1714@raje.tech", function (error0, conn) {
+  amqp.connect(process.env.RabbitMQ_URL, function (error0, conn) {
     if (error0) {
       throw error0;
     }
@@ -96,41 +100,51 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
           var ModDate = moment()
             .tz("Asia/Kolkata")
             .format("MMMM Do YYYY, hh:mm:ss A");
-          const ApprovedData1 = await MongoSchemaObject.findOneAndUpdate(
-            {
-              _id: Message.EmpRefNo,
-            },
-            {
-              $set: {
-                Status: "Success",
-                ApprovalID: RandomApprovalID,
-                ModifiedAt: ModDate,
-              },
-            },
-            { new: true }
-          );
+          try {
+            if (Message.Status === "Initiated") {
+              const ApprovedData1 = await MongoSchemaObject.findOneAndUpdate(
+                {
+                  _id: Message.EmpRefNo,
+                },
+                {
+                  $set: {
+                    Status: "Success",
+                    ApprovalID: RandomApprovalID,
+                    ModifiedAt: ModDate,
+                  },
+                },
+                { new: true }
+              );
+              var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+              var ApprovedData = {
+                ReqData: Message,
+                ResData: ApprovedData1,
+              };
+              var StrigApprovedData = JSON.stringify(ApprovedData);
+              var LogData =
+                "|" + ModDate + "| Source - MQ |" + StrigApprovedData;
 
-          var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
-          var ApprovedData =  {
-			ReqData : Message,
-			ResData : ApprovedData1
-}
-          var StrigApprovedData = JSON.stringify(ApprovedData);
-          var LogData = "|" + ModDate + "| Source - MQ |" + StrigApprovedData;
+              let filename = "./Logs/APIApprovedReq" + "-" + FileDate + ".log";
+              // var logStream = fs.createWriteStream(filename, { flags: 'a' });
+              // use {flags: 'a'} to append and {flags: 'w'} to erase and write a new file
+              // logStream.write(LogData + '\n');
 
-          let filename = "./Logs/APIApprovedReq" + "-" + FileDate + ".log";
-          // var logStream = fs.createWriteStream(filename, { flags: 'a' });
-          // use {flags: 'a'} to append and {flags: 'w'} to erase and write a new file
-          // logStream.write(LogData + '\n');
+              fs.appendFile(filename, LogData + "\n", function (err) {
+                if (err) throw err;
+              });
 
-          fs.appendFile(filename, LogData + "\n", function (err) {
-            if (err) throw err;
-          });
-
-          console.log(
-            `Approved RefNo ${Message.EmpRefNo} | Approval ID ${RandomApprovalID} | LoggedDate ${ModDate}`
-          );
-          //const test = await MongoSchemaObject.create(Message.Data);
+              console.log(
+                `Approved RefNo ${Message.EmpRefNo} | Approval ID ${RandomApprovalID} | LoggedDate ${ModDate}`
+              );
+              //const test = await MongoSchemaObject.create(Message.Data);
+            } else if (Message.Status === "Success") {
+              console.log(
+                `Already Approved RefNo ${Message.EmpRefNo} | Approval ID ${Message.ApprovalID} | LoggedDate ${Message.ModifiedAt}`
+              );
+            }
+          } catch (error) {
+            console.log(`Error in MQ Request Body | LoggedDate ${ModDate}`);
+          }
         },
         {
           noAck: true,
@@ -139,18 +153,6 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
     });
   });
 };
-
-/*
-setInterval(()=>{
-  try {
-    const getemployees = await Employee.find().select("-__v");
-  } catch (error) {
-    
-  }
-  
-
-
-},50000)*/
 
 function CreatePath(filePath) {
   if (fs.existsSync(filePath)) {

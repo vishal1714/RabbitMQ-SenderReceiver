@@ -7,6 +7,9 @@ const EmployeeAPILog = require("./models/APILogSchema");
 const EmployeeSchema = require("./models/EmployeeSchema");
 const fs = require("fs");
 const moment = require("moment");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./Config.env" });
 
 ConnectDB();
 
