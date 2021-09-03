@@ -32,9 +32,9 @@ var APILogMQRec = async () => {
         (msg) => {
           const Message = JSON.parse(msg.content.toString());
           EmployeeAPILog.create(Message.Data);
-          console.log(
+          /*console.log(
             `MQ ID -> ${Message.MQ_ID} | Queue Name -> ${Queue} | Meesage Logged Date -> ${Message.Data.LoggedAt}`
-          );
+          );*/
         },
         {
           noAck: true,
