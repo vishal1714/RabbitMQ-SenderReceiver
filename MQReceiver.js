@@ -101,7 +101,11 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
             .tz("Asia/Kolkata")
             .format("MMMM Do YYYY, hh:mm:ss A");
           try {
-            if (Message.Status === "Initiated") {
+            const getemployeebyid = await MongoSchemaObject.findById(
+              Message.EmpRefNo || Message._id
+            ).select("-__v");
+            //console.log(getemployeebyid);
+            if (getemployeebyid.Status === "Initiated") {
               const ApprovedData1 = await MongoSchemaObject.findOneAndUpdate(
                 {
                   _id: Message.EmpRefNo || Message._id,
@@ -134,12 +138,16 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
               });
 
               console.log(
-                `Approved RefNo ${Message.EmpRefNo} | Approval ID ${RandomApprovalID} | LoggedDate ${ModDate}`
+                `||001|| Approved RefNo ${Message.EmpRefNo} | Approval ID ${RandomApprovalID} | LoggedDate ${ModDate}`
               );
               //const test = await MongoSchemaObject.create(Message.Data);
-            } else if (Message.Status === "Success") {
+            } else if (getemployeebyid.Status === "Success") {
               console.log(
-                `Already Approved RefNo ${Message.EmpRefNo} | Approval ID ${Message.ApprovalID} | LoggedDate ${Message.ModifiedAt}`
+                `||002|| Already Approved RefNo ${
+                  Message.EmpRefNo || Message._id
+                } | Approval ID ${getemployeebyid.ApprovalID} | LoggedDate ${
+                  getemployeebyid.ModifiedAt
+                }`
               );
             }
           } catch (error) {
