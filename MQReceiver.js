@@ -104,7 +104,7 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
             if (Message.Status === "Initiated") {
               const ApprovedData1 = await MongoSchemaObject.findOneAndUpdate(
                 {
-                  _id: Message.EmpRefNo,
+                  _id: Message.EmpRefNo || Message._id,
                 },
                 {
                   $set: {
