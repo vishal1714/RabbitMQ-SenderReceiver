@@ -10,10 +10,42 @@ const { createReadStream, createWriteStream } = require("fs");
 const path = require("path");
 const { promisify } = require("util");
 const pipe = promisify(pipeline);
+const S3 = require("aws-sdk/clients/s3");
 
 dotenv.config({ path: "./config/config.env" });
 
-cron.schedule("59 */23 * * *", function () {
+const bucket = process.env.AWS_BUCKET;
+const accessKeyId = process.env.AWS_ID;
+const secretAccessKey = process.env.AWS_KEY;
+const region = process.env.AWS_ZONE;
+
+const s3 = new S3({
+  region,
+  accessKeyId,
+  secretAccessKey,
+});
+
+//upload file
+const UploadFile = (filepath, Filename) => {
+  try {
+    const filestream = fs.createReadStream(filepath);
+
+    const params = {
+      Bucket: bucket,
+      Key: Filename, // File name you want to save as in S3
+      Body: filestream,
+    };
+
+    s3.upload(params, function (err, data) {
+      if (err) {
+        throw err;
+      }
+      console.log(`File uploaded successfully. ${data.Location}`);
+    });
+  } catch (error) {}
+};
+
+cron.schedule("* * * * *", function () {
   //59 */23 * * *
   var Currentdate = moment()
     .tz("Asia/Kolkata")
@@ -52,8 +84,11 @@ const LogGZIP = async () => {
   };
 
   if (fs.existsSync(inputFile)) {
-    await dogzip(inputFile, outputFile);
-    console.log(`GZIP is done -> ${ZipLogFileName}`);
+    if (!fs.existsSync(outputFile)) {
+      await dogzip(inputFile, outputFile);
+      await UploadFile(inputFile, LogFileName);
+      console.log(`GZIP is done -> ${ZipLogFileName}`);
+    }
   }
 };
 
