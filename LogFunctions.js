@@ -45,7 +45,7 @@ const UploadFile = (filepath, Filename) => {
   } catch (error) {}
 };
 
-cron.schedule("* * * * *", function () {
+cron.schedule("0 1 * * *", function () {
   //59 */23 * * *
   var Currentdate = moment()
     .tz("Asia/Kolkata")
@@ -62,10 +62,12 @@ const LogGZIP = async () => {
   var FileDate = yesterday.tz("Asia/Kolkata").format("YYYY-MM-DD");
   var ZipFileDate = yesterday.tz("Asia/Kolkata").format("YYYY-MM-DD");
   let LogFileName = `APILog-${FileDate}.log`;
+  let ApprovalLogFileName = `APIApprovedReq-${FileDate}.log`;
   let ZipLogFileName = `APILog-${ZipFileDate}.log.gz`;
   //let EncLogFileName = `APILog-${ZipFileDate}.log.enc`;
   //let DecLogFileName = `APILog-${ZipFileDate}Dec.log`;
   let inputFile = path.join(__dirname, `/Logs/`, LogFileName);
+  let inputApprovalFile = path.join(__dirname, `/Logs/`, ApprovalLogFileName);
   let outputFile = path.join(__dirname, `/Logs/Zip/`, ZipLogFileName);
   //let outputFile = path.join(__dirname, `/Logs/Zip/`, EncLogFileName);
   // ! Gzip File Function
@@ -85,8 +87,9 @@ const LogGZIP = async () => {
 
   if (fs.existsSync(inputFile)) {
     if (!fs.existsSync(outputFile)) {
-      await dogzip(inputFile, outputFile);
       await UploadFile(inputFile, LogFileName);
+      await UploadFile(inputApprovalFile, ApprovalLogFileName);
+      await dogzip(inputFile, outputFile).then(fs.unlinkSync(inputFile));
       console.log(`GZIP is done -> ${ZipLogFileName}`);
     }
   }
