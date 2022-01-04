@@ -32,7 +32,7 @@ const UploadFile = (filepath, Filename) => {
 
     const params = {
       Bucket: bucket,
-      Key: Filename, // File name you want to save as in S3
+      Key: "APILogs/"+Filename, // File name you want to save as in S3
       Body: filestream,
     };
 
@@ -64,12 +64,12 @@ const LogGZIP = async () => {
   let LogFileName = `APILog-${FileDate}.log`;
   let ApprovalLogFileName = `APIApprovedReq-${FileDate}.log`;
   let ZipLogFileName = `APILog-${ZipFileDate}.log.gz`;
-  //let EncLogFileName = `APILog-${ZipFileDate}.log.enc`;
+  let ApprovedFileName = `APILog-${ZipFileDate}.log.gz`;
   //let DecLogFileName = `APILog-${ZipFileDate}Dec.log`;
   let inputFile = path.join(__dirname, `/Logs/`, LogFileName);
   let inputApprovalFile = path.join(__dirname, `/Logs/`, ApprovalLogFileName);
   let outputFile = path.join(__dirname, `/Logs/Zip/`, ZipLogFileName);
-  //let outputFile = path.join(__dirname, `/Logs/Zip/`, EncLogFileName);
+  let outputApprovedFile = path.join(__dirname, `/Logs/Zip/`, ApprovedFileName);
   // ! Gzip File Function
 
   const dogzip = async (input, output) => {
@@ -90,6 +90,7 @@ const LogGZIP = async () => {
       await UploadFile(inputFile, LogFileName);
       await UploadFile(inputApprovalFile, ApprovalLogFileName);
       await dogzip(inputFile, outputFile).then(fs.unlinkSync(inputFile));
+      await dogzip(inputApprovalFile, outputApprovedFile).then(fs.unlinkSync(inputApprovalFile));
       console.log(`GZIP is done -> ${ZipLogFileName}`);
     }
   }
