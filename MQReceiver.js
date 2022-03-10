@@ -51,8 +51,8 @@ var APILogMQRec = async () => {
           var FileDate = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
           var LogedinDB = JSON.stringify(Message);
           //console.log('Log' + LogedinDB);
-          var LogData = "|" + LogDate + "| Source - MQ |" + LogedinDB;
-
+          //var LogData = "|" + LogDate + "| Source - MQ | " + LogedinDB;
+            var LogData = LogedinDB;
           let filename = "./Logs/APILog" + "-" + FileDate + ".log";
           // var logStream = fs.createWriteStream(filename, { flags: 'a' });
           // use {flags: 'a'} to append and {flags: 'w'} to erase and write a new file
@@ -125,8 +125,7 @@ const ApprovalMQ = async (Queue, MongoSchemaObject) => {
                 ResData: ApprovedData1,
               };
               var StrigApprovedData = JSON.stringify(ApprovedData);
-              var LogData =
-                "|" + ModDate + "| Source - MQ |" + StrigApprovedData;
+              var LogData = StrigApprovedData;
 
               let filename = "./Logs/APIApprovedReq" + "-" + FileDate + ".log";
               // var logStream = fs.createWriteStream(filename, { flags: 'a' });

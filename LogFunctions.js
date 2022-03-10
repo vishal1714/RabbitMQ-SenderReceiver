@@ -64,7 +64,7 @@ const LogGZIP = async () => {
   let LogFileName = `APILog-${FileDate}.log`;
   let ApprovalLogFileName = `APIApprovedReq-${FileDate}.log`;
   let ZipLogFileName = `APILog-${ZipFileDate}.log.gz`;
-  let ApprovedFileName = `APILog-${ZipFileDate}.log.gz`;
+  let ApprovedFileName = `APIApproval-${ZipFileDate}.log.gz`;
   //let DecLogFileName = `APILog-${ZipFileDate}Dec.log`;
   let inputFile = path.join(__dirname, `/Logs/`, LogFileName);
   let inputApprovalFile = path.join(__dirname, `/Logs/`, ApprovalLogFileName);
