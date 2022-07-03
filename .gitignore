@@ -8,7 +8,7 @@
 *.log
 logs
 Logs
-logs.txt
+log.txt
 _.log.gz
 _.log
 npm-debug.log*
